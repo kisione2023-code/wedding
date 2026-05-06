@@ -1,0 +1,1347 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  background: #0d120f;
+  color: #e8e4dc;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.page {
+  margin: 0;
+}
+
+/*
+ * Высота секции = панорама (script: PAN_END) + отдельный запас скролла под кроссфейд.
+ * Больше vh → дольше кроссфейды 2-й и 3-й сцен.
+ */
+.scene {
+  position: relative;
+  height: 900vh;
+  min-height: 900vh;
+}
+
+.scene__sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.scene__viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  /* Чётче композитинг слоёв с transform (WebKit) */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+#world {
+  display: flex;
+  height: 100%;
+  width: max-content;
+}
+
+.scene__stage {
+  position: relative;
+  width: 100vw;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* Tall track so the first image can pan vertically (camera moves down) */
+.scene__pan {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: var(--pan-height, 280vh);
+  will-change: filter;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.scene__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+  user-select: none;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.scene__img--back {
+  object-position: center top;
+}
+
+.scene__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  overflow: hidden;
+  will-change: filter;
+  transform: scale3d(1, 1, 1);
+  transform-origin: center center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.scene__overlay--3 {
+  z-index: 3;
+  /* Масштаб из JS идёт от низа — нижний край кадра совпадает с низом экрана */
+  transform-origin: center bottom;
+}
+
+/* Как в примере: низ кадра у нижней границы экрана (scene3.webp) */
+.scene__overlay--3 .scene__img {
+  object-position: center bottom;
+}
+
+.scene__img--front {
+  transform: none;
+}
+
+/* Фигура: выезд слева по скроллу (transform задаётся в script.js) */
+.scene__lady {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  will-change: filter;
+  /* overflow visible — конфета может быть справа от девушки */
+  overflow: visible;
+}
+
+.scene__lady-inner {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: min(96vh, 100%);
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  z-index: 2;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.scene__lady-img {
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  object-fit: contain;
+  object-position: left bottom;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  /* Конфета ниже слоя lady2: hit-test идёт через PNG (pointer-events: none) на #candyImg */
+  pointer-events: none;
+}
+
+.scene__lady-img--stand {
+  opacity: 1;
+}
+
+.scene__lady-img--lean {
+  opacity: 0;
+}
+
+/* Контейнер lady2 + конфета: позиционирование относительно ladyInner */
+.lady2-wrap {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.scene__candy-wrap {
+  position: absolute;
+  left: 47vh;
+  bottom: 15.9vh;
+  /* Ниже .scene__lady-img--lean (z-index: 2): конфета визуально под пальцами, геометрия та же */
+  z-index: 1;
+  height: 9vh;
+  /* JS включает hit-target только когда конфета уже видна */
+  pointer-events: none;
+  cursor: pointer;
+}
+
+/* Конфета: внутри lady2-wrap, позиционирована у кончиков пальцев lady2 */
+.scene__candy {
+  position: relative;
+  display: block;
+  height: 100%;
+  width: auto;
+  opacity: 0;
+
+  pointer-events: none;
+  cursor: pointer;
+}
+
+.scene__candy-wrap.is-hovering .scene__candy,
+.scene__candy-wrap:hover .scene__candy,
+.scene__candy:hover {
+  filter: brightness(1.3) drop-shadow(0 0 8px rgba(255, 200, 90, 0.7));
+}
+
+.candy-hint,
+.forest-letter-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #fff3c6;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -6px);
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.75),
+    0 0 14px rgba(255, 214, 91, 0.42);
+  will-change: transform, opacity;
+}
+
+.candy-hint__text,
+.forest-letter-hint__text {
+  font-family: "Neucha", cursive;
+  font-size: clamp(16px, 2vh + 1vw, 36px);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.candy-hint__arrow,
+.forest-letter-hint__arrow {
+  display: block;
+  width: clamp(20px, 2.5vw, 30px);
+  height: auto;
+  opacity: 0.88;
+  filter:
+    drop-shadow(0 1px 4px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 7px rgba(255, 214, 91, 0.2));
+  animation: hintFloatY 1.2s ease-in-out infinite;
+}
+
+@keyframes hintFloatY {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(6px); }
+  100% { transform: translateY(0); }
+}
+
+.scene__lady-img--lean {
+  z-index: 2;
+  position: relative;
+}
+
+/* Видео конфеты: поверх всего, скрыто по умолчанию */
+.scene__candy-video {
+  position: absolute;
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform-origin: center center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Светлячки: дрейф на родителе, мигание на ::before (два transform не конфликтуют) */
+.scene__fireflies {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+  will-change: filter;
+  /* Непрозрачность задаётся из script.js по прогрессу панорамы */
+  opacity: 0;
+}
+
+.firefly {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 0;
+  height: 0;
+  animation-duration: var(--drift, 16s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.firefly::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--size, 6px);
+  height: var(--size, 6px);
+  margin-left: calc(var(--size, 6px) / -2);
+  margin-top: calc(var(--size, 6px) / -2);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 32% 28%,
+    #fffef5 0%,
+    #ffe8a0 35%,
+    rgba(255, 200, 90, 0.35) 62%,
+    transparent 68%
+  );
+  box-shadow:
+    0 0 8px 2px rgba(255, 230, 160, 0.65),
+    0 0 18px 6px rgba(255, 190, 100, 0.25);
+  animation: firefly-twinkle var(--tw, 2.2s) ease-in-out infinite;
+  animation-delay: var(--tw-d, 0s);
+  will-change: transform, opacity;
+}
+
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(22px, 5vh, 54px);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #fff3c6;
+  text-align: center;
+  pointer-events: none;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(255, 214, 91, 0.42);
+  transform: translateX(-50%);
+  animation: scroll-hint-float 1.8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.scroll-hint__text {
+  font-family: "Neucha", cursive;
+  font-size: clamp(16px, 2vh + 1vw, 36px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.scroll-hint__arrow {
+  width: 16px;
+  height: 16px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.88;
+  filter:
+    drop-shadow(0 1px 4px rgba(0, 0, 0, 0.38))
+    drop-shadow(0 0 6px rgba(255, 214, 91, 0.26));
+}
+
+@keyframes scroll-hint-float {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 0.78;
+  }
+  50% {
+    transform: translate(-50%, 8px);
+    opacity: 1;
+  }
+}
+
+.horizontal-hint {
+  position: absolute;
+  right: clamp(14px, 3.6vw, 36px);
+  top: 50%;
+  z-index: 35;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(8px, 1.2vh, 12px);
+  padding: clamp(8px, 1.4vw, 14px);
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  color: #fff3c6;
+  background: transparent;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  animation: horizontal-hint-float 2.2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.horizontal-hint:focus-visible {
+  outline: 2px solid rgba(255, 243, 198, 0.85);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.horizontal-hint__text {
+  font-family: "Neucha", cursive;
+  font-size: clamp(18px, 2.6vw, 42px);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.75),
+    0 0 14px rgba(255, 214, 91, 0.42),
+    0 0 22px rgba(255, 200, 120, 0.28);
+}
+
+.horizontal-hint__arrow {
+  display: block;
+  width: clamp(26px, 3.5vw, 40px);
+  height: auto;
+  flex-shrink: 0;
+  opacity: 0.88;
+  filter:
+    drop-shadow(0 1px 5px rgba(0, 0, 0, 0.42))
+    drop-shadow(0 0 8px rgba(255, 214, 91, 0.22))
+    drop-shadow(0 0 14px rgba(255, 190, 90, 0.14));
+}
+
+@keyframes horizontal-hint-float {
+  0%,
+  100% {
+    transform: translateY(calc(-50% + 0px)) translateX(0);
+  }
+  50% {
+    transform: translateY(calc(-50% - 6px)) translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .horizontal-hint {
+    animation: none;
+    transform: translateY(-50%);
+  }
+}
+
+.firefly--1 {
+  animation-name: firefly-drift-1;
+}
+
+.firefly--2 {
+  animation-name: firefly-drift-2;
+}
+
+.firefly--3 {
+  animation-name: firefly-drift-3;
+}
+
+.firefly--4 {
+  animation-name: firefly-drift-4;
+}
+
+@keyframes firefly-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.65);
+  }
+  18% {
+    opacity: 0.95;
+    transform: scale(1.12);
+  }
+  35% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  52% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  70% {
+    opacity: 0.25;
+    transform: scale(0.7);
+  }
+  88% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes firefly-drift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(3.5vw, -2.8vh);
+  }
+  45% {
+    transform: translate(-2.2vw, -4.5vh);
+  }
+  70% {
+    transform: translate(2.8vw, -1.2vh);
+  }
+}
+
+@keyframes firefly-drift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-3.8vw, -2vh);
+  }
+  50% {
+    transform: translate(2.5vw, -5vh);
+  }
+  75% {
+    transform: translate(-1.5vw, 1.8vh);
+  }
+}
+
+@keyframes firefly-drift-3 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  15% {
+    transform: translate(4vw, 2vh);
+  }
+  40% {
+    transform: translate(-3vw, -3.8vh);
+  }
+  65% {
+    transform: translate(1.8vw, -5.5vh);
+  }
+  85% {
+    transform: translate(-2.5vw, -1vh);
+  }
+}
+
+@keyframes firefly-drift-4 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  30% {
+    transform: translate(-2.8vw, -4.2vh);
+  }
+  55% {
+    transform: translate(3.2vw, 1.2vh);
+  }
+  80% {
+    transform: translate(-1.8vw, -2.5vh);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene__pan,
+  .scene__overlay,
+  .scene__overlay--3,
+  .scene__img--front {
+    transition: none;
+  }
+
+  .scene__lady-inner {
+    transform: none !important;
+  }
+
+  .firefly {
+    animation: none;
+  }
+
+  .firefly::before {
+    animation: none;
+    opacity: 0.55;
+  }
+
+  .candy-hint__arrow,
+  .forest-letter-hint__arrow {
+    animation: none;
+  }
+}
+
+#horizontalTrigger {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 1px;
+  width: 1px;
+}
+
+#horizontalScene {
+  position: relative;
+  top: -20px;
+  display: flex;
+  height: calc(100% + 20px);
+  width: max-content;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.scene4__frame {
+  position: relative;
+  width: calc((100vh + 20px) * 6915 / 2305);
+  height: 100%;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: clamp(28px, 4vw, 56px);
+  background: transparent;
+}
+
+.scene4__img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Scene 5 — человек на тропинке, приближается при вертикальном скролле (мастер-таймлайн) */
+#scene5 .scene4__img {
+  position: relative;
+  z-index: 1;
+}
+
+/* Scene 5: man1 — старт правее и ниже, движение влево-вниз к дереву; финал совпадает с man2. Письмо не трогать. См. p1From/p1To в script.js */
+.scene5__man1-wrap {
+  position: absolute;
+  right: 86vh;
+  bottom: 23vh;
+  height: 28vh;
+  width: auto;
+
+  z-index: 12;
+  pointer-events: none;
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  transform-origin: 50% 100%;
+  will-change: transform, opacity;
+
+  transform: translate3d(31vh, -25vh, 0) scale(1.25);
+}
+
+#scene5Man1 {
+  position: relative;
+  height: 100%;
+  width: auto;
+}
+
+#scene5Man2 {
+  position: absolute;
+  right: 86vh;
+  bottom: 23vh;
+  height: 28vh;
+  width: auto;
+
+  opacity: 0;
+  pointer-events: none;
+
+  z-index: 13;
+
+  transform-origin: 50% 100%;
+  will-change: opacity;
+
+  transform: translate3d(8vh, 4vh, 0) scale(2.24);
+}
+
+#scene5Man1 img,
+#scene5Man2 img {
+  height: 100%;
+  width: auto;
+  display: block;
+}
+
+.scene5__man-scroll {
+  width: auto;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.scene5__man-walk {
+  height: 100%;
+  width: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.scene5__man {
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+  object-fit: contain;
+  object-position: bottom center;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ═══ Paper layout: только текстура в .paper-bg; текст — абсолютные слои в % / vw / vh ═══ */
+.paper-layout {
+  position: relative;
+}
+
+.paper-bg {
+  width: 100%;
+  display: block;
+}
+
+.paper-content {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.paper-content * {
+  pointer-events: auto;
+}
+
+/* —— Candy cover: как у письма — абсолютный stack + рейлы по высоте картинки фантика — */
+.paper-content--cover {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  box-sizing: border-box;
+  overflow: visible;
+
+  font-size: clamp(0.68rem, 1.65vw, 1.02rem);
+  color: rgba(42, 30, 22, 0.95);
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.paper-content--cover p {
+  margin: 0;
+}
+
+/*
+ * Если текст на экране «дублируется» или не совпадает с живой версткой:
+ * на cover_candy.webp часто уже нарисованы буквы. Нужна текстура без текста —
+ * только фон обёртки; тогда этот блок станет эталонным.
+ */
+
+.candy-cover-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  display: block;
+
+  width: 100%;
+  height: 100%;
+  --cover-title-font: "Moderno Two", "Georgia", "Times New Roman", serif;
+  --cover-text-font: "Blogger Sans", system-ui, sans-serif;
+  --cover-helper-font: "Neucha", cursive;
+  /* Явный цвет дерева текста на случай сброса наследования */
+  color: rgba(26, 16, 10, 0.98);
+
+  opacity: 1;
+  visibility: visible;
+}
+
+.candy-cover-rail {
+  display: none;
+  pointer-events: none;
+}
+
+/* Рейлы через flex-basis — % height у пустых flex-элементов в части браузеров даёт 0 */
+.candy-cover-rail--top {
+  flex: 0 0 clamp(6px, 1.1vmin, 22px);
+}
+
+.candy-cover-rail--after-head {
+  flex: 0 0 clamp(4px, 0.6vmin, 14px);
+}
+
+.candy-cover-rail--bottom {
+  flex: 0 0 clamp(10px, 1.5vmin, 28px);
+}
+
+.candy-cover-grow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.candy-cover-block {
+  position: absolute;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.candy-cover-block--head {
+  left: 27.2%;
+  top: 8%;
+  width: 54.5%;
+  max-width: none;
+  text-align: left;
+}
+
+.candy-cover-date-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 1.1em;
+  white-space: nowrap;
+}
+
+.candy-cover-stack .candy-cover-display {
+  margin: 0;
+
+  font-family: var(--cover-title-font);
+  font-weight: 600;
+  font-size: clamp(2.5rem, 4.4vw, 4.7rem);
+  line-height: 0.9;
+  letter-spacing: 0.035em;
+  color: rgba(26, 16, 10, 0.97);
+
+  text-shadow: 0 0 1px rgba(255, 252, 248, 0.35);
+}
+
+.candy-cover-time {
+  margin: 0;
+  padding-top: 0.18em;
+  transform: translateX(calc(5.4em - 10px));
+
+  font-family: var(--cover-helper-font);
+  font-weight: 500;
+  font-size: clamp(0.63rem, 1.52vw, 0.96rem);
+  line-height: 1.35;
+  letter-spacing: 0;
+  color: rgba(30, 20, 14, 0.94);
+
+  white-space: nowrap;
+}
+
+.candy-cover-forest-line {
+  margin: 0.02em 0 0 !important;
+
+  font-size: clamp(2.65rem, 5.05vw, 5.35rem);
+  line-height: 0.9;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.candy-cover-intro-line {
+  display: block;
+  margin: 0.34em -13.5% 0 calc(-9% - 30px) !important;
+  max-width: 31em;
+
+  text-align: right;
+  font-weight: 500;
+  font-family: var(--cover-helper-font);
+  font-size: clamp(0.63rem, 1.52vw, 0.96rem);
+  line-height: 1.35;
+
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.candy-cover-block--middle {
+  left: 31.8%;
+  top: 46.8%;
+  width: 36.4%;
+  max-width: none;
+  text-align: center;
+}
+
+.candy-cover-block--middle .letter-text {
+  margin: 0 0 0.1em 0 !important;
+
+  text-align: center;
+  font-family: var(--cover-text-font);
+  font-weight: 400;
+  font-size: clamp(0.72rem, 1.72vw, 1.08rem);
+  line-height: 1.45;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.candy-cover-block--middle .letter-text:last-child {
+  margin-bottom: 0 !important;
+}
+
+.candy-cover-block--middle .candy-cover-strike {
+  margin-top: -0.1em !important;
+  margin-left: 46% !important;
+
+  font-family: var(--cover-helper-font);
+  font-size: clamp(0.63rem, 1.52vw, 0.96rem);
+
+  letter-spacing: 0;
+
+  text-decoration: line-through;
+  text-decoration-color: rgba(38, 26, 18, 0.4);
+  text-decoration-thickness: 1px;
+}
+
+.candy-cover-block--closing {
+  left: 19.45%;
+  bottom: 13.6%;
+  width: 70%;
+  text-align: center;
+}
+
+.candy-cover-stack .candy-cover-footer-title {
+  margin: 0 !important;
+
+  font-family: var(--cover-title-font);
+  font-weight: 600;
+  font-size: clamp(1.67rem, 2.93vw, 3.13rem);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(26, 16, 10, 0.96);
+
+  text-shadow: 0 0 1px rgba(255, 252, 248, 0.35);
+}
+
+/* —— Letter modal: отступы как доля высоты листа (не экрана); привязка к .letter-modal__paper — */
+
+.paper-content--letter {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+.letter-stack {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+}
+
+.letter-rail {
+  flex-shrink: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* Доля высоты листа (высота рейлов — % высоты листа через flex) */
+.letter-rail--top {
+  height: 12.6%;
+}
+
+.letter-rail--after-head {
+  height: 4.2%;
+}
+
+.letter-rail--before-venue {
+  height: 6%;
+}
+
+/* Зазор между блоком заведения и строкой парковки */
+.letter-rail--after-venue {
+  height: 3%;
+}
+
+.letter-rail--grow {
+  flex: 1 1 0;
+  min-height: 17%;
+}
+
+.letter-rail--bottom {
+  height: 9%;
+}
+
+.letter-block {
+  position: relative;
+  left: auto;
+  transform: none;
+  width: 74%;
+  max-width: 74%;
+  text-align: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.letter-block--head .letter-title {
+  margin: 0 0 0.25em 0;
+}
+
+.letter-title {
+  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-size: clamp(0.82rem, 2.05vw, 1.32rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: rgba(36, 26, 18, 0.95);
+}
+
+.letter-text {
+  font-family: "Blogger Sans", system-ui, sans-serif;
+  font-size: clamp(0.72rem, 1.72vw, 1.08rem);
+  font-weight: 400;
+  line-height: 1.45;
+  margin: 0 0 0.35em 0;
+  color: rgba(40, 30, 22, 0.92);
+}
+
+.letter-block--body .letter-text:first-child {
+  margin-bottom: 1.1em;
+}
+
+.letter-text--subscription {
+  line-height: 1.22;
+  margin-bottom: 0.35em;
+}
+
+.letter-text--parking {
+  line-height: 1.28;
+  margin-bottom: 0;
+}
+
+.letter-block--body .letter-text:last-child,
+.letter-block--venue .letter-text:last-child,
+.letter-block--parking .letter-text:last-child {
+  margin-bottom: 0;
+}
+
+.letter-text--venue-name {
+  margin-top: 0.35em;
+  margin-bottom: 0;
+}
+
+.letter-text--venue-name strong {
+  font-weight: 700;
+}
+
+.letter-link {
+  color: inherit;
+  text-decoration: none;
+
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease,
+    color 0.35s ease,
+    text-shadow 0.35s ease;
+
+  display: inline-block;
+}
+
+.letter-link:hover,
+.letter-link:focus-visible {
+  color: rgb(112, 68, 28);
+  transform: scale(1.06);
+  filter:
+    drop-shadow(0 0 8px rgba(255, 240, 190, 0.95))
+    drop-shadow(0 0 18px rgba(255, 205, 120, 0.65))
+    drop-shadow(0 0 32px rgba(255, 170, 60, 0.35));
+  text-shadow:
+    0 0 10px rgba(255, 250, 220, 0.98),
+    0 0 20px rgba(255, 220, 150, 0.75),
+    0 0 36px rgba(255, 185, 80, 0.45);
+}
+
+.letter-link:focus-visible {
+  outline: 2px solid rgba(255, 215, 130, 0.85);
+  outline-offset: 3px;
+}
+
+.letter-helper {
+  font-family: "Neucha", cursive;
+  font-size: clamp(0.63rem, 1.52vw, 0.96rem);
+  line-height: 1.35;
+  margin: 0 0 0.35em 0;
+  color: rgba(50, 38, 28, 0.9);
+}
+
+.letter-block--footer .letter-helper:last-child {
+  margin-bottom: 0;
+}
+
+#coverCandyWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  visibility: hidden;
+
+  /* Иначе невидимый полноэкранный слой перехватывает клик по конфете (z-index: 50) */
+  pointer-events: none;
+}
+
+.paper-layout--cover {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  width: min(96vw, clamp(760px, 66vw, 1500px));
+  aspect-ratio: 925 / 540;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.paper-layout--cover .paper-bg {
+  position: absolute;
+  z-index: 0;
+  left: -5.5%;
+  top: -92.6%;
+  width: 110.7%;
+  max-width: none;
+}
+
+.paper-layout--cover > .paper-content {
+  z-index: 2;
+  transform: translateZ(0);
+}
+
+#freeCandy {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 4;
+  width: clamp(120px, 20vw, 360px);
+  max-width: none;
+
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#freeCandy .paper-bg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.candy-cover-close {
+  position: fixed;
+
+  top: max(20px, env(safe-area-inset-top));
+  right: max(20px, env(safe-area-inset-right));
+
+  z-index: 100;
+
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  background: transparent;
+
+  color: #fff;
+  font-size: 40px;
+  line-height: 1;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+  cursor: pointer;
+  pointer-events: auto;
+
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.72));
+}
+
+/* ── Scene 5: письмо на дереве — обёртка + подсказка «нажми», как у конфеты */
+.scene5__letter-wrap {
+  position: absolute;
+
+  right: 64vh;
+  top: 27vh;
+
+  width: 7vh;
+  min-width: 36px;
+  max-width: 68px;
+
+  aspect-ratio: 720 / 920;
+
+  transform: translate(50%, -50%);
+
+  z-index: 18;
+
+  pointer-events: none;
+}
+
+.scene5__letter-hit {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+
+  background: transparent;
+  cursor: pointer;
+
+  pointer-events: auto;
+
+  background-image: url("images/letter.webp");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease,
+    opacity 0.35s ease;
+
+  transform-origin: center center;
+}
+
+.scene5__letter-hit:hover {
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px rgba(255, 230, 160, 0.7));
+}
+
+.letter-modal {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  overflow: hidden;
+
+  z-index: 70;
+
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.letter-modal__backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: radial-gradient(
+    ellipse 85% 70% at 50% 45%,
+    rgba(22, 30, 40, 0.45) 0%,
+    rgba(6, 8, 12, 0.88) 100%
+  );
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  opacity: 0;
+}
+
+.letter-modal__panel {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+  margin: 0;
+
+  opacity: 0;
+  transform: scale(0.96);
+
+  /* full-viewport panel must not block backdrop (dismiss on dimmed area) */
+  pointer-events: none;
+}
+
+.letter-modal__paper,
+.letter-modal__close {
+  pointer-events: auto;
+}
+
+.letter-modal__paper {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: auto;
+
+  pointer-events: auto;
+
+  overflow: visible;
+
+  filter: drop-shadow(0 14px 40px rgba(0, 0, 0, 0.42));
+}
+
+.letter-modal__paper .paper-bg {
+  display: block;
+
+  width: auto;
+  height: min(96vh, 1600px);
+
+  max-width: 92vw;
+
+  object-fit: contain;
+}
+
+.letter-modal__close {
+  position: fixed;
+
+  top: max(20px, env(safe-area-inset-top));
+  right: max(20px, env(safe-area-inset-right));
+
+  z-index: 100;
+
+  width: 44px;
+  height: 44px;
+
+  border: none;
+  background: transparent;
+
+  color: #fff;
+  font-size: 40px;
+  line-height: 1;
+
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

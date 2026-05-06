@@ -1,8 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Blogger+Sans:wght@400;500;600&family=Neucha&display=swap");
+
 @import "tailwindcss";
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0d120f;
+  --foreground: #e8e4dc;
 }
 
 @theme inline {
@@ -12,15 +20,290 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  overflow: hidden;
+}
+
+/* ── Cinematic scene container ───────────────────────────────────── */
+
+.cinematic-scene {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #0d120f;
+}
+
+/* ── Background layer ────────────────────────────────────────────── */
+
+#background {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  will-change: filter;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+#background img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Candy image — shown initially, click triggers the video ─────── */
+
+#candyImg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  width: 28vw;
+  max-width: 380px;
+  height: auto;
+  display: block;
+  cursor: pointer;
+  pointer-events: auto;
+  touch-action: manipulation;
+  user-select: none;
+  will-change: opacity, transform;
+}
+
+#candyImg:hover {
+  filter: brightness(1.15) drop-shadow(0 0 14px rgba(255, 210, 90, 0.6));
+}
+
+/* ── Candy video — hidden until click, then plays centered ───────── */
+
+#candyVideo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 60vw;
+  max-width: 840px;
+  height: auto;
+  display: block;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* ── Cover wrapper — fills scene, flex-centers the cover image ────── */
+
+#coverCandyWrap {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.paper-layout {
+  position: relative;
+}
+
+.paper-layout--cover {
+  width: min(96vw, clamp(280px, 88vw, 940px));
+  flex-shrink: 0;
+}
+
+.paper-layout--cover .paper-bg {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 16px 48px rgba(0, 0, 0, 0.55));
+  pointer-events: none;
+  user-select: none;
+}
+
+.paper-layout--cover > .paper-content {
+  z-index: 1;
+}
+
+.paper-content {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.paper-content * {
+  pointer-events: none;
+}
+
+.paper-content--cover {
+  font-size: clamp(0.68rem, 1.65vw, 1.02rem);
+  color: rgba(42, 30, 22, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  min-height: 100%;
+  padding: 5.5% 7% 10%;
+  box-sizing: border-box;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.paper-content--cover p {
+  margin: 0;
+}
+
+.candy-cover__head {
+  position: relative;
+  flex: 0 0 auto;
+  padding: 0 2% 0 0;
+}
+
+.candy-cover__date-main {
+  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.1rem, 3.05vw, 2rem);
+  font-weight: 600;
+  line-height: 1.06;
+  margin: 0;
+  letter-spacing: 0.01em;
+  color: rgba(35, 24, 16, 0.96);
+}
+
+.candy-cover__forest {
+  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-size: clamp(1.02rem, 2.85vw, 1.82rem);
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0.18em 0 0 0.18em;
+  letter-spacing: 0.01em;
+  color: rgba(35, 24, 16, 0.96);
+}
+
+.candy-cover__intro {
+  font-family: "Blogger Sans", system-ui, sans-serif;
+  font-size: clamp(0.62rem, 1.65vw, 0.92rem);
+  font-weight: 500;
+  line-height: 1.42;
+  margin: 0.55em 0 0 auto;
+  padding: 0;
+  max-width: 15.5em;
+  text-align: right;
+  color: rgba(42, 30, 22, 0.92);
+}
+
+.candy-cover__middle {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0.6em 4% 0.5em;
+  width: 100%;
+}
+
+.candy-cover__middle-inner {
+  width: 100%;
+  max-width: 20rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.candy-cover__middle-main {
+  text-align: center;
+  width: 100%;
+}
+
+.candy-cover__middle-main .candy-text {
+  font-family: "Blogger Sans", system-ui, sans-serif;
+  font-size: clamp(0.74rem, 2vw, 1.08rem);
+  font-weight: 500;
+  line-height: 1.52;
+  margin: 0;
+  letter-spacing: 0.015em;
+  color: rgba(44, 32, 24, 0.94);
+}
+
+.candy-cover__middle-main .candy-text:not(:first-child) {
+  margin-top: 0.12em;
+}
+
+.candy-cover__middle-main .candy-cover__strike {
+  margin-top: 0.42em;
+  font-size: clamp(0.56rem, 1.48vw, 0.82rem);
+  letter-spacing: 0.03em;
+  text-decoration: line-through;
+  text-decoration-color: rgba(55, 42, 30, 0.45);
+  text-decoration-thickness: 1px;
+}
+
+.candy-cover__closing {
+  position: relative;
+  flex: 0 0 auto;
+  margin: 0;
+  margin-top: auto;
+  width: 100%;
+  max-width: min(92%, 24ch);
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0.5em;
+  text-align: center;
+  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-size: clamp(0.78rem, 2.15vw, 1.42rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: 0.02em;
+  color: rgba(35, 24, 16, 0.96);
+}
+
+/* ── Free candy — top layer, floats above the cover ─────────────── */
+
+#freeCandy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(36%, -90%);
+  z-index: 20;
+  width: 20vw;
+  max-width: 256px;
+  height: auto;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.65));
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* ── Reduced-motion fallback ─────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  #background {
+    transition: none !important;
+  }
+  #freeCandy {
+    animation: none !important;
+  }
 }

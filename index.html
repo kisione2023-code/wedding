@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Лес — вертикальное движение камеры</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Blogger+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Neucha&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js"></script>
+</head>
+<body>
+  <main class="page">
+    <section class="scene" id="scene1" aria-label="Сцена: спуск над лесом">
+      <div class="scene__sticky">
+        <div class="scene__viewport">
+          <div id="world">
+          <div class="scene__stage">
+          <div class="scene__pan" id="panTrack">
+            <img
+              class="scene__img scene__img--back"
+              src="images/scene1.webp"
+              alt=""
+              width="2452"
+              height="3200"
+              decoding="sync"
+              fetchpriority="high"
+            />
+          </div>
+          <div class="scene__overlay" id="scene2Layer" aria-hidden="true">
+            <img
+              class="scene__img scene__img--front"
+              src="images/scene2.webp"
+              alt=""
+              width="2452"
+              height="3200"
+              decoding="async"
+              fetchpriority="low"
+            />
+          </div>
+          <div class="scene__overlay scene__overlay--3" id="scene3Layer" aria-hidden="true">
+            <img
+              class="scene__img scene__img--front"
+              src="images/scene3.webp"
+              alt=""
+              width="1024"
+              height="1536"
+              decoding="async"
+              fetchpriority="low"
+            />
+          </div>
+          <div class="scene__lady" id="ladyLayer" aria-hidden="true">
+            <div class="scene__lady-inner" id="ladyInner">
+              <img
+                class="scene__lady-img scene__lady-img--stand"
+                src="images/lady.webp"
+                alt=""
+                width="1024"
+                height="1536"
+                decoding="async"
+                fetchpriority="low"
+              />
+              <div class="lady2-wrap">
+                <img
+                  class="scene__lady-img scene__lady-img--lean"
+                  src="images/lady2.webp"
+                  alt=""
+                  width="1024"
+                  height="1536"
+                  decoding="async"
+                  fetchpriority="low"
+                />
+                <div class="scene__candy-wrap">
+                  <img
+                    class="scene__candy"
+                    id="candyImg"
+                    src="images/candy.png"
+                    alt=""
+                    width="256"
+                    height="128"
+                    decoding="async"
+                    fetchpriority="low"
+                  />
+                  <div class="candy-hint">
+                    <div class="candy-hint__text">нажми</div>
+                    <img class="candy-hint__arrow" src="./img/arrow-handdrawn.svg" alt="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <video
+            class="scene__candy-video"
+            id="candyVideo"
+            src="images/candy.webm"
+            muted
+            preload="auto"
+            playsinline
+            aria-hidden="true"
+          ></video>
+          <div id="coverCandyWrap">
+            <button type="button" class="candy-cover-close" aria-label="Закрыть">×</button>
+            <div class="paper-layout paper-layout--cover">
+              <img
+                id="coverCandy"
+                class="paper-bg"
+                src="images/cover_candy.webp"
+                alt=""
+                decoding="async"
+              />
+              <div class="paper-content paper-content--cover">
+                <div class="candy-cover-stack">
+                  <div class="candy-cover-rail candy-cover-rail--top" aria-hidden="true"></div>
+                  <div class="candy-cover-block candy-cover-block--head">
+                    <div class="candy-cover-date-row">
+                      <span class="letter-title candy-cover-display">17&nbsp;МАЯ</span>
+                      <span class="letter-text candy-cover-time">
+                        15:00 сбор гостей<br />
+                        16:00 начало
+                      </span>
+                    </div>
+                    <p class="letter-title candy-cover-display candy-cover-forest-line">
+                      В&nbsp;ТАЙНОМ&nbsp;ЛЕСУ
+                    </p>
+                    <p class="letter-text candy-cover-intro-line">
+                      расскажем историю, в которой вы тоже замешаны
+                    </p>
+                  </div>
+                  <div class="candy-cover-rail candy-cover-rail--after-head" aria-hidden="true"></div>
+                  <div class="candy-cover-grow">
+                    <div class="candy-cover-block candy-cover-block--middle">
+                      <p class="letter-text">Будет немного магии,</p>
+                      <p class="letter-text">
+                        много тепла и приятных людей
+                      </p>
+                      <p class="letter-text candy-cover-strike">и не только людей</p>
+                    </div>
+                  </div>
+                  <footer class="candy-cover-block candy-cover-block--closing">
+                    <p class="letter-title candy-cover-footer-title">
+                      МЫ ОЧЕНЬ ВАС ЖДЁМ!
+                    </p>
+                  </footer>
+                  <div class="candy-cover-rail candy-cover-rail--bottom" aria-hidden="true"></div>
+                </div>
+              </div>
+            </div>
+            <div class="paper-layout paper-layout--free" id="freeCandy">
+              <img class="paper-bg" src="images/free_candy.webp" alt="" decoding="async" />
+            </div>
+          </div>
+          <div class="scene__fireflies" id="firefliesLayer" aria-hidden="true">
+            <span class="firefly firefly--1" style="--x:5%;--y:62%;--delay:-0.8s;--drift:17s;--tw:2s;--tw-d:0s;--size:6px"></span>
+            <span class="firefly firefly--2" style="--x:12%;--y:74%;--delay:-2.4s;--drift:21s;--tw:1.5s;--tw-d:-0.2s;--size:8px"></span>
+            <span class="firefly firefly--3" style="--x:18%;--y:58%;--delay:-4.1s;--drift:14s;--tw:2.4s;--tw-d:-0.6s;--size:5px"></span>
+            <span class="firefly firefly--4" style="--x:24%;--y:82%;--delay:-1.2s;--drift:19s;--tw:1.8s;--tw-d:-1s;--size:7px"></span>
+            <span class="firefly firefly--1" style="--x:31%;--y:69%;--delay:-5s;--drift:16s;--tw:2.2s;--tw-d:-0.3s;--size:6px"></span>
+            <span class="firefly firefly--2" style="--x:38%;--y:77%;--delay:-3.6s;--drift:22s;--tw:1.7s;--tw-d:-0.5s;--size:5px"></span>
+            <span class="firefly firefly--3" style="--x:44%;--y:64%;--delay:-0.5s;--drift:18s;--tw:2.6s;--tw-d:0s;--size:9px"></span>
+            <span class="firefly firefly--4" style="--x:51%;--y:86%;--delay:-6.2s;--drift:15s;--tw:1.4s;--tw-d:-0.8s;--size:6px"></span>
+            <span class="firefly firefly--1" style="--x:57%;--y:71%;--delay:-2.9s;--drift:20s;--tw:2s;--tw-d:-0.1s;--size:7px"></span>
+            <span class="firefly firefly--2" style="--x:63%;--y:79%;--delay:-4.7s;--drift:17s;--tw:2.3s;--tw-d:-0.4s;--size:5px"></span>
+            <span class="firefly firefly--3" style="--x:70%;--y:66%;--delay:-1.5s;--drift:23s;--tw:1.6s;--tw-d:-0.9s;--size:8px"></span>
+            <span class="firefly firefly--4" style="--x:76%;--y:73%;--delay:-3.1s;--drift:14s;--tw:2.1s;--tw-d:0s;--size:6px"></span>
+            <span class="firefly firefly--1" style="--x:82%;--y:81%;--delay:-5.5s;--drift:18s;--tw:1.9s;--tw-d:-0.2s;--size:7px"></span>
+            <span class="firefly firefly--2" style="--x:88%;--y:68%;--delay:-0.3s;--drift:21s;--tw:2.5s;--tw-d:-0.7s;--size:5px"></span>
+            <span class="firefly firefly--3" style="--x:93%;--y:76%;--delay:-2s;--drift:16s;--tw:1.5s;--tw-d:-0.3s;--size:8px"></span>
+            <span class="firefly firefly--4" style="--x:9%;--y:88%;--delay:-4.4s;--drift:19s;--tw:2.2s;--tw-d:-1.1s;--size:6px"></span>
+            <span class="firefly firefly--1" style="--x:48%;--y:59%;--delay:-6.8s;--drift:22s;--tw:1.8s;--tw-d:0s;--size:5px"></span>
+            <span class="firefly firefly--2" style="--x:66%;--y:91%;--delay:-1.9s;--drift:15s;--tw:2.4s;--tw-d:-0.5s;--size:7px"></span>
+            <span class="firefly firefly--3" style="--x:22%;--y:92%;--delay:-3.3s;--drift:20s;--tw:1.7s;--tw-d:-0.2s;--size:6px"></span>
+            <span class="firefly firefly--4" style="--x:55%;--y:95%;--delay:-5.1s;--drift:17s;--tw:2s;--tw-d:-0.8s;--size:8px"></span>
+            <span class="firefly firefly--1" style="--x:3%;--y:52%;--delay:-2.2s;--drift:24s;--tw:2.6s;--tw-d:-0.4s;--size:5px"></span>
+            <span class="firefly firefly--2" style="--x:96%;--y:54%;--delay:-4.9s;--drift:16s;--tw:1.4s;--tw-d:0s;--size:7px"></span>
+            <span class="firefly firefly--3" style="--x:41%;--y:48%;--delay:-0.7s;--drift:18s;--tw:2.1s;--tw-d:-0.6s;--size:6px"></span>
+            <span class="firefly firefly--4" style="--x:72%;--y:52%;--delay:-6s;--drift:21s;--tw:1.9s;--tw-d:-0.1s;--size:5px"></span>
+          </div>
+          <div class="scroll-hint">
+            <div class="scroll-hint__text">вниз</div>
+            <div class="scroll-hint__arrow"></div>
+          </div>
+          <button type="button" class="horizontal-hint" id="horizontalHint" aria-label="Листать сцену вправо">
+            <span class="horizontal-hint__text">дальше</span>
+            <img class="horizontal-hint__arrow" src="./img/arrow-handdrawn-right.svg" alt="" width="72" height="42" decoding="async" />
+          </button>
+          <div id="horizontalTrigger"></div>
+          </div>
+          <div id="horizontalScene" class="scene4__track">
+            <section class="scene4__frame" id="scene5" aria-hidden="true">
+              <img src="images/scene5.webp" class="scene4__img" alt="" />
+              <div class="scene5__man1-wrap">
+                <div id="scene5Man1" class="scene5__man-scroll">
+                  <div id="scene5ManWalk" class="scene5__man-walk">
+                    <img
+                      id="scene5Man"
+                      class="scene5__man"
+                      src="images/man1.webp"
+                      alt=""
+                      width="640"
+                      height="1280"
+                      decoding="async"
+                      fetchpriority="low"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div id="scene5Man2">
+                <img src="images/man2.webp" alt="" />
+              </div>
+              <div class="scene5__letter-wrap">
+                <button
+                  type="button"
+                  id="forestLetter"
+                  class="scene5__letter-hit"
+                  aria-label="Прочитать письмо"
+                ></button>
+                <div class="forest-letter-hint" aria-hidden="true">
+                  <div class="forest-letter-hint__text">нажми</div>
+                  <img
+                    class="forest-letter-hint__arrow"
+                    src="./img/arrow-handdrawn.svg"
+                    alt=""
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div
+      id="letterModal"
+      class="letter-modal"
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="letterModalTitle"
+    >
+      <div class="letter-modal__backdrop" data-letter-modal-dismiss></div>
+      <div class="letter-modal__panel">
+        <button type="button" class="letter-modal__close" aria-label="Закрыть">×</button>
+        <div class="paper-layout letter-modal__paper">
+          <img
+            class="paper-bg"
+            src="images/letter.webp"
+            alt=""
+            width="720"
+            height="920"
+            decoding="async"
+          />
+          <div class="paper-content paper-content--letter">
+            <div class="letter-stack">
+              <div class="letter-rail letter-rail--top" aria-hidden="true"></div>
+              <header class="letter-block letter-block--head">
+                <p class="letter-title" id="letterModalTitle">
+                  ПОКА ЛЕС НАПИТЫВАЕТСЯ МАГИЕЙ,
+                </p>
+                <p class="letter-title">ОСТАВИМ ЕЩЁ НЕСКОЛЬКО ПОДСКАЗОК:</p>
+              </header>
+              <div class="letter-rail letter-rail--after-head" aria-hidden="true"></div>
+              <div class="letter-block letter-block--body">
+                <p class="letter-text">Лучший подарок — на карту или в конверте</p>
+                <p class="letter-text letter-text--subscription">
+                  Вместо букета будем рады цветочной подписке — так цветы<br />
+                  не умрут за пару дней, а останутся с нами надолго
+                </p>
+              </div>
+              <div class="letter-rail letter-rail--before-venue" aria-hidden="true"></div>
+              <div class="letter-block letter-block--venue">
+                <p class="letter-text">Адрес тайного леса:</p>
+                <p class="letter-text">
+                  <a
+                    class="letter-link"
+                    href="https://yandex.com/maps/-/CPWLyLLq"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Проспект 60-летия Октября, 5к3</a>
+                </p>
+                <p class="letter-text letter-text--venue-name">
+                  <strong>Ресторан Блажь</strong>
+                </p>
+              </div>
+              <div
+                class="letter-rail letter-rail--after-venue"
+                aria-hidden="true"
+              ></div>
+              <div class="letter-block letter-block--parking">
+                <p class="letter-text letter-text--parking">
+                  Платная парковка перед рестораном,<br />
+                  бесплатная — во дворе
+                </p>
+              </div>
+              <div class="letter-rail letter-rail--grow" aria-hidden="true"></div>
+              <footer class="letter-block letter-block--footer">
+                <p class="letter-helper">
+                  Если заблудитесь, найтись поможет координатор
+                </p>
+                <p class="letter-helper">Ксения +7 929 653 6583</p>
+              </footer>
+              <div class="letter-rail letter-rail--bottom" aria-hidden="true"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>

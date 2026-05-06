@@ -1,12 +1,28 @@
 {
   "mcpServers": {
-    "shadcn": {
+    "filesystem": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@jpisnice/shadcn-ui-mcp-server"
-      ]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "."]
+    },
+    "web-search": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-web-search"]
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-git"]
     }
   },
-   "$version": 3
+  "$version": 3,
+  "permissions": {
+    "allow": [
+      "mcp__filesystem__write_file",
+      "mcp__filesystem__read_file",
+      "mcp__filesystem__list_directory"
+    ]
+  }
 }
