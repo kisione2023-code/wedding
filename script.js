@@ -51,6 +51,59 @@
     });
   }, { passive: true });
 
+  function initFlowerSubscriptionTapHint() {
+    var flowerLink = document.querySelector(".letter-link--flower");
+    if (!flowerLink) return;
+
+    var flowerWrap = flowerLink.closest(".flower-link-wrap");
+    if (!flowerWrap) return;
+
+    var touchQuery = window.matchMedia("(hover: none), (pointer: coarse)");
+    var closeTimer = 0;
+
+    function closeHint() {
+      flowerWrap.classList.remove("is-tooltip-open");
+      flowerLink.removeAttribute("data-tap-ready");
+      flowerLink.setAttribute("aria-expanded", "false");
+      if (closeTimer) {
+        window.clearTimeout(closeTimer);
+        closeTimer = 0;
+      }
+    }
+
+    function openHint() {
+      flowerWrap.classList.add("is-tooltip-open");
+      flowerLink.setAttribute("data-tap-ready", "true");
+      flowerLink.setAttribute("aria-expanded", "true");
+      flowerLink.focus({ preventScroll: true });
+
+      if (closeTimer) window.clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(closeHint, 7000);
+    }
+
+    flowerLink.setAttribute("aria-expanded", "false");
+
+    flowerLink.addEventListener("click", function (e) {
+      if (!touchQuery.matches || e.detail === 0) return;
+
+      if (flowerLink.getAttribute("data-tap-ready") === "true") {
+        closeHint();
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      openHint();
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!touchQuery.matches || flowerWrap.contains(e.target)) return;
+      closeHint();
+    });
+  }
+
+  initFlowerSubscriptionTapHint();
+
   /* ============================================================
      Позиционирование персонажа — логика
 

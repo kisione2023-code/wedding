@@ -1,11 +1,57 @@
-@import url("https://fonts.googleapis.com/css2?family=Blogger+Sans:wght@400;500;600&family=Neucha&display=swap");
-
 @import "tailwindcss";
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+@font-face {
+  font-family: "Blogger Sans";
+  src: url("/fonts/blogger-sans-400.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blogger Sans";
+  src: url("/fonts/blogger-sans-500.woff") format("woff");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blogger Sans";
+  src: url("/fonts/blogger-sans-600.woff") format("woff");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neucha";
+  src: url("/fonts/neucha-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-display-600.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("/fonts/playfair-display-700.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
 }
 
 :root {
@@ -219,7 +265,7 @@ body {
 }
 
 .candy-cover__date-main {
-  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.98rem, 5.8cqw, 2rem);
   font-weight: 600;
   line-height: 1.06;
@@ -229,7 +275,7 @@ body {
 }
 
 .candy-cover__forest {
-  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.92rem, 5.3cqw, 1.82rem);
   font-weight: 600;
   line-height: 1.1;
@@ -316,7 +362,7 @@ body {
 
 .candy-cover__closing-title {
   margin: 0;
-  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.68rem, 3.65cqw, 1.42rem);
   font-weight: 600;
   line-height: 1.18;

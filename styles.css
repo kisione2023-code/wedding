@@ -4,6 +4,54 @@
   box-sizing: border-box;
 }
 
+@font-face {
+  font-family: "Blogger Sans";
+  src: url("fonts/blogger-sans-400.woff") format("woff");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blogger Sans";
+  src: url("fonts/blogger-sans-500.woff") format("woff");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Blogger Sans";
+  src: url("fonts/blogger-sans-600.woff") format("woff");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neucha";
+  src: url("fonts/neucha-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("fonts/playfair-display-600.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("fonts/playfair-display-700.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 html {
   scroll-behavior: auto;
 }
@@ -1209,7 +1257,8 @@ body {
 }
 
 .flower-link-wrap:hover .flower-link-tooltip,
-.flower-link-wrap:focus-within .flower-link-tooltip {
+.flower-link-wrap:focus-within .flower-link-tooltip,
+.flower-link-wrap.is-tooltip-open .flower-link-tooltip {
   opacity: 1;
   transform: translate(-50%, 0);
   visibility: visible;
