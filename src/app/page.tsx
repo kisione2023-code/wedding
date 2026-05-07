@@ -200,7 +200,14 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <p className="candy-title candy-cover__closing">Мы очень вас ждём!</p>
+            <footer className="candy-cover__closing">
+              <p className="candy-title candy-cover__closing-title">
+                Мы очень вас ждём!
+              </p>
+              <p className="candy-text candy-cover__signature">
+                Никита и Ксения
+              </p>
+            </footer>
           </div>
         </div>
       </div>

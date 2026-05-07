@@ -242,7 +242,7 @@ body {
 .candy-hint__text,
 .forest-letter-hint__text {
   font-family: "Neucha", cursive;
-  font-size: clamp(16px, 2vh + 1vw, 36px);
+  font-size: clamp(22px, 2.72vh + 1.36vw, 49px);
   line-height: 1;
   white-space: nowrap;
 }
@@ -250,7 +250,7 @@ body {
 .candy-hint__arrow,
 .forest-letter-hint__arrow {
   display: block;
-  width: clamp(20px, 2.5vw, 30px);
+  width: clamp(18px, 2.25vw, 27px);
   height: auto;
   opacity: 0.88;
   filter:
@@ -379,14 +379,14 @@ body {
 
 .scroll-hint__text {
   font-family: "Neucha", cursive;
-  font-size: clamp(16px, 2vh + 1vw, 36px);
+  font-size: clamp(22px, 2.72vh + 1.36vw, 49px);
   line-height: 1;
   letter-spacing: 0.02em;
 }
 
 .scroll-hint__arrow {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
   transform: rotate(45deg);
@@ -409,19 +409,20 @@ body {
 }
 
 .horizontal-hint {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  position: absolute;
+  top: 50%;
+  right: clamp(18px, 4vw, 62px);
+  bottom: auto;
   z-index: 120;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: clamp(8px, 1.2vh, 12px);
-  width: min(46vw, 280px);
-  min-height: 100vh;
-  padding: clamp(8px, 1.4vw, 14px) clamp(14px, 3.6vw, 36px) clamp(8px, 1.4vw, 14px) clamp(8px, 1.4vw, 14px);
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: clamp(8px, 1.4vw, 14px);
   margin: 0;
   border: none;
   border-radius: 0;
@@ -432,6 +433,7 @@ body {
   visibility: hidden;
   pointer-events: none;
   animation: none;
+  transform: translateY(-50%);
   will-change: transform, opacity;
 }
 
@@ -443,7 +445,7 @@ body {
 
 .horizontal-hint__text {
   font-family: "Neucha", cursive;
-  font-size: clamp(18px, 2.6vw, 42px);
+  font-size: clamp(25px, 3.54vw, 57px);
   line-height: 1;
   letter-spacing: 0.02em;
   white-space: nowrap;
@@ -455,7 +457,7 @@ body {
 
 .horizontal-hint__arrow {
   display: block;
-  width: clamp(26px, 3.5vw, 40px);
+  width: clamp(23px, 3.15vw, 36px);
   height: auto;
   flex-shrink: 0;
   opacity: 0.88;
@@ -882,9 +884,9 @@ body {
   margin-left: auto;
   text-align: left;
 
-  font-family: var(--cover-helper-font);
+  font-family: "Neucha", cursive;
   font-weight: 500;
-  font-size: clamp(0.5rem, 2cqw, 0.96rem);
+  font-size: clamp(0.91rem, 3.62cqw, 1.74rem);
   line-height: 1.35;
   letter-spacing: 0;
   color: rgba(30, 20, 14, 0.94);
@@ -909,7 +911,7 @@ body {
   text-align: right;
   font-weight: 500;
   font-family: var(--cover-helper-font);
-  font-size: clamp(0.5rem, 2.05cqw, 0.96rem);
+  font-size: clamp(0.91rem, 3.72cqw, 1.74rem);
   line-height: 1.35;
 
   letter-spacing: 0;
@@ -930,7 +932,7 @@ body {
   text-align: center;
   font-family: var(--cover-text-font);
   font-weight: 400;
-  font-size: clamp(0.54rem, 2.35cqw, 1.08rem);
+  font-size: clamp(0.65rem, 2.82cqw, 1.3rem);
   line-height: 1.45;
   letter-spacing: 0;
   white-space: nowrap;
@@ -945,7 +947,7 @@ body {
   margin-left: 46% !important;
 
   font-family: var(--cover-helper-font);
-  font-size: clamp(0.48rem, 1.95cqw, 0.96rem);
+  font-size: clamp(0.73rem, 2.95cqw, 1.45rem);
 
   letter-spacing: 0;
 
@@ -956,7 +958,7 @@ body {
 
 .candy-cover-block--closing {
   left: 19.45%;
-  bottom: 13.6%;
+  bottom: 11%;
   width: 70%;
   text-align: center;
 }
@@ -974,6 +976,17 @@ body {
   color: rgba(26, 16, 10, 0.96);
 
   text-shadow: 0 0 1px rgba(255, 252, 248, 0.35);
+}
+
+.candy-cover-signature {
+  margin: 0.28em 0 0 !important;
+  font-family: "Neucha", cursive;
+  font-weight: 500;
+  font-size: clamp(0.94rem, 3.85cqw, 2.27rem);
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-align: center;
+  color: rgba(30, 20, 14, 0.94);
 }
 
 /* —— Letter modal: отступы как доля высоты листа (не экрана); привязка к .letter-modal__paper — */
@@ -1023,12 +1036,12 @@ body {
 }
 
 .letter-rail--grow {
-  flex: 0 0 8.5%;
+  flex: 0 0 5.6%;
   min-height: 0;
 }
 
 .letter-rail--bottom {
-  height: 5.5%;
+  height: 2.7%;
 }
 
 .letter-block {
@@ -1056,7 +1069,7 @@ body {
 
 .letter-text {
   font-family: "Blogger Sans", system-ui, sans-serif;
-  font-size: clamp(0.72rem, 1.72vw, 1.08rem);
+  font-size: clamp(0.86rem, 2.06vw, 1.3rem);
   font-weight: 400;
   line-height: 1.45;
   margin: 0 0 0.35em 0;
@@ -1068,11 +1081,19 @@ body {
 }
 
 .letter-text--subscription {
-  line-height: 1.22;
+  line-height: 1.28;
   margin-bottom: 0.35em;
   margin-left: auto;
   margin-right: auto;
-  max-width: 34em;
+  max-width: 42em;
+}
+
+.subscription-line {
+  display: block;
+}
+
+.letter-text--subscription .subscription-line:first-child {
+  white-space: nowrap;
 }
 
 .letter-text--parking {
@@ -1096,21 +1117,35 @@ body {
 }
 
 .letter-link {
-  color: inherit;
-  text-decoration: none;
+  color: rgb(112, 68, 28);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgba(112, 68, 28, 0.72);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 0.18em;
 
   transition:
     transform 0.35s ease,
     filter 0.35s ease,
     color 0.35s ease,
+    text-decoration-color 0.35s ease,
     text-shadow 0.35s ease;
 
   display: inline-block;
 }
 
+.letter-link::after {
+  content: " ↗";
+  font-size: 0.78em;
+  font-weight: 600;
+  text-decoration: none;
+}
+
 .letter-link:hover,
 .letter-link:focus-visible {
-  color: rgb(112, 68, 28);
+  color: rgb(88, 48, 16);
+  text-decoration-color: currentColor;
   transform: scale(1.06);
   filter:
     drop-shadow(0 0 8px rgba(255, 240, 190, 0.95))
@@ -1127,9 +1162,62 @@ body {
   outline-offset: 3px;
 }
 
+.flower-link-wrap {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.flower-link-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.72em);
+  z-index: 24;
+  width: min(25em, 82vw);
+  padding: 0.58em 0.72em;
+  border-radius: 6px;
+  background: rgba(42, 30, 22, 0.96);
+  box-shadow: 0 8px 24px rgba(18, 12, 8, 0.26);
+  color: rgba(255, 245, 222, 0.98);
+  font-family: "Blogger Sans", system-ui, sans-serif;
+  font-size: clamp(0.74rem, 1.62vw, 1.03rem);
+  font-weight: 400;
+  line-height: 1.24;
+  opacity: 0;
+  pointer-events: none;
+  text-align: left;
+  text-shadow: none;
+  transform: translate(-50%, 0.35em);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s ease;
+  visibility: hidden;
+  white-space: normal;
+}
+
+.flower-link-tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 0;
+  height: 0;
+  border: 0.36em solid transparent;
+  border-top-color: rgba(42, 30, 22, 0.96);
+  transform: translateX(-50%);
+}
+
+.flower-link-wrap:hover .flower-link-tooltip,
+.flower-link-wrap:focus-within .flower-link-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  visibility: visible;
+}
+
 .letter-helper {
   font-family: "Neucha", cursive;
-  font-size: clamp(0.56rem, 1.32vw, 0.86rem);
+  font-size: clamp(0.85rem, 1.99vw, 1.3rem);
   line-height: 1.2;
   margin: 0 0 0.22em 0;
   color: rgba(50, 38, 28, 0.9);
@@ -1186,17 +1274,29 @@ body {
   }
 
   .paper-layout--cover {
-    width: min(96vw, calc((100svh - 96px) * 1.713));
+    width: min(96vw, calc((100svh - 126px) * 1.52));
+    aspect-ratio: 925 / 585;
   }
 
   .candy-cover-block--head {
     left: 26.5%;
-    top: 10%;
+    top: 6.5%;
     width: 57%;
   }
 
   .candy-cover-date-row {
+    align-items: last baseline;
     gap: 0.45em;
+  }
+
+  @supports not (align-items: last baseline) {
+    .candy-cover-date-row {
+      align-items: flex-end;
+    }
+
+    .candy-cover-time {
+      transform: translateY(0.06em);
+    }
   }
 
   .candy-cover-stack .candy-cover-display {
@@ -1205,35 +1305,35 @@ body {
   }
 
   .candy-cover-time {
-    padding-top: 0.05em;
-    font-size: clamp(0.44rem, 2.1cqw, 0.72rem);
-    line-height: 1.2;
+    padding-top: 0;
+    font-size: clamp(0.8rem, 3.82cqw, 1.3rem);
+    line-height: 1.14;
   }
 
   .candy-cover-forest-line {
-    margin-top: 0.08em !important;
+    margin-top: -0.18em !important;
     font-size: clamp(1.02rem, 7.25cqw, 2.15rem);
     letter-spacing: 0.012em;
   }
 
   .candy-cover-intro-line {
-    margin: 0.34em 0 0 0 !important;
-    max-width: 100%;
+    margin: 0.1em -10% 0 -12% !important;
+    max-width: none;
     text-align: right;
-    white-space: normal;
-    font-size: clamp(0.46rem, 2.15cqw, 0.72rem);
+    white-space: nowrap;
+    font-size: clamp(0.72rem, 2.72cqw, 1.02rem);
     line-height: 1.18;
   }
 
   .candy-cover-block--middle {
     left: 29%;
-    top: 47.5%;
+    top: 40.4%;
     width: 43%;
   }
 
   .candy-cover-block--middle .letter-text {
     white-space: normal;
-    font-size: clamp(0.48rem, 2.35cqw, 0.76rem);
+    font-size: clamp(0.58rem, 2.82cqw, 0.91rem);
     line-height: 1.18;
   }
 
@@ -1241,17 +1341,30 @@ body {
     margin-top: 0 !important;
     margin-left: 36% !important;
     white-space: nowrap;
-    font-size: clamp(0.42rem, 1.9cqw, 0.68rem);
+    font-size: clamp(0.63rem, 2.87cqw, 1.04rem);
   }
 
   .candy-cover-block--closing {
     left: 22%;
-    bottom: 14.5%;
+    bottom: 23.5%;
     width: 62%;
+  }
+
+  .horizontal-hint {
+    top: calc(50% + min(30.4vw, calc((100svh - 126px) / 2)) + 12px);
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
   }
 
   .candy-cover-stack .candy-cover-footer-title {
     font-size: clamp(0.78rem, 4.45cqw, 1.5rem);
+    line-height: 1.05;
+  }
+
+  .candy-cover-signature {
+    margin-top: 0.18em !important;
+    font-size: clamp(0.82rem, 3.85cqw, 1.36rem);
     line-height: 1.05;
   }
 }
@@ -1446,6 +1559,42 @@ body {
   max-width: none;
 
   object-fit: contain;
+}
+
+@media (max-width: 700px) {
+  .letter-modal__paper {
+    width: min(94vw, calc(94svh * 0.8325), 860px);
+    aspect-ratio: 1024 / 1230;
+  }
+
+  .letter-modal__paper .paper-bg {
+    object-fit: fill;
+  }
+
+  .letter-block {
+    width: 82%;
+    max-width: 82%;
+  }
+
+  .letter-title {
+    font-size: clamp(0.78rem, 3.45vw, 1.22rem);
+  }
+
+  .letter-text {
+    font-size: clamp(0.78rem, 3.35vw, 1.18rem);
+  }
+
+  .letter-text--subscription {
+    font-size: clamp(0.72rem, 3.08vw, 1.08rem);
+  }
+
+  .letter-rail--grow {
+    flex-basis: 8%;
+  }
+
+  .letter-rail--bottom {
+    height: 1%;
+  }
 }
 
 .letter-modal__close {

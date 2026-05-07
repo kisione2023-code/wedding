@@ -474,6 +474,10 @@
       yoyo: true,
       ease: "sine.inOut"
     }, 0.6);
+
+    tl.add(function () {
+      showHorizontalHint();
+    }, 0.35);
   }
 
   let horizontalMode = false;
@@ -534,7 +538,7 @@
       scale: 2.16,
     };
 
-    var p1ToMan2Transform = {
+    var p2Transform = {
       transformOrigin: "50% 100%",
       force3D: true,
       x: "8vh",
@@ -543,7 +547,15 @@
     };
 
     if (!scene5ManFinalFits(p1ToTransform)) {
-      p1ToTransform = p1ToMan2Transform;
+      p1ToTransform = {
+        transformOrigin: "50% 100%",
+        force3D: true,
+        x: "8vh",
+        y: "4vh",
+        scale: 2.16,
+      };
+
+      p2Transform = Object.assign({}, p1ToTransform, { x: "13vh", scale: 2.24 });
     }
 
     var p1To = Object.assign({}, p1ToTransform, {
@@ -586,7 +598,7 @@
     });
 
     if (scene5Man2) {
-      gsap.set(scene5Man2, { opacity: 0 });
+      gsap.set(scene5Man2, Object.assign({ opacity: 0 }, p2Transform));
     }
 
     gsap.set(scene5ManWalk, {
@@ -843,6 +855,18 @@
     });
   }
 
+  function hideHorizontalHintImmediately() {
+    if (!horizontalHint) return;
+
+    horizontalHintHiddenAtEnd = true;
+    gsap.killTweensOf(horizontalHint);
+    gsap.set(horizontalHint, {
+      opacity: 0,
+      visibility: "hidden",
+      pointerEvents: "none"
+    });
+  }
+
   function playCandyVideo() {
     if (candyAnimating || !candy || !candyVideo) return;
     candyAnimating = true;
@@ -1011,34 +1035,38 @@
     playCandyVideo();
   }, true);
 
-  function closeCandyCover() {
+  function closeCandyCover(options) {
     if (!coverWrap) return;
 
-      gsap.killTweensOf(["#coverCandyWrap", "#freeCandy"]);
+    var opts = options || {};
+    gsap.killTweensOf(["#coverCandyWrap", "#freeCandy"]);
+    hideHorizontalHintImmediately();
 
-      gsap.to("#coverCandyWrap", {
-        opacity: 0,
-        duration: 0.4,
-        onComplete: function () {
-          gsap.set("#coverCandyWrap", {
-            visibility: "hidden",
-            pointerEvents: "none",
-          });
-          if (freeCandyEl) gsap.set(freeCandyEl, { opacity: 0, visibility: "hidden", y: 0, scale: 1 });
-          gsap.set(candy, { opacity: 1 });
-          gsap.set(candyTargets, { pointerEvents: "auto" });
-          unlockScroll();
-          ScrollTrigger.refresh();
-          horizontalMode = true;
-          gsap.set("#horizontalScene", { pointerEvents: "none" });
-          showHorizontalHint();
+    gsap.to("#coverCandyWrap", {
+      opacity: 0,
+      duration: 0.4,
+      onComplete: function () {
+        gsap.set("#coverCandyWrap", {
+          visibility: "hidden",
+          pointerEvents: "none",
+        });
+        if (freeCandyEl) gsap.set(freeCandyEl, { opacity: 0, visibility: "hidden", y: 0, scale: 1 });
+        gsap.set(candy, { opacity: 1 });
+        gsap.set(candyTargets, { pointerEvents: "auto" });
+        unlockScroll();
+        ScrollTrigger.refresh();
+        horizontalMode = true;
+        gsap.set("#horizontalScene", { pointerEvents: "none" });
+        if (opts.advance) {
+          goToHorizontalScene();
         }
-      });
+      }
+    });
 
-      gsap.to(bgLayers, {
-        filter: "blur(0px)",
-        duration: 0.8
-      });
+    gsap.to(bgLayers, {
+      filter: "blur(0px)",
+      duration: 0.8
+    });
   }
 
   if (candyCoverCloseBtn) {
@@ -1065,13 +1093,15 @@
   if (horizontalHint) {
     var lastHorizontalHintAt = 0;
     var handleHorizontalHint = function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+
       var now = Date.now();
       if (now - lastHorizontalHintAt < 350) return;
       lastHorizontalHintAt = now;
 
-      e.preventDefault();
-      e.stopPropagation();
-      goToHorizontalScene();
+      hideHorizontalHintImmediately();
+      closeCandyCover({ advance: true });
     };
 
     horizontalHint.addEventListener("click", handleHorizontalHint);

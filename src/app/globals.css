@@ -240,7 +240,7 @@ body {
 
 .candy-cover__intro {
   font-family: "Blogger Sans", system-ui, sans-serif;
-  font-size: clamp(0.54rem, 2.65cqw, 0.92rem);
+  font-size: clamp(0.65rem, 3.18cqw, 1.1rem);
   font-weight: 500;
   line-height: 1.42;
   margin: 0.55em 0 0 auto;
@@ -278,7 +278,7 @@ body {
 
 .candy-cover__middle-main .candy-text {
   font-family: "Blogger Sans", system-ui, sans-serif;
-  font-size: clamp(0.6rem, 3.05cqw, 1.08rem);
+  font-size: clamp(0.72rem, 3.66cqw, 1.3rem);
   font-weight: 500;
   line-height: 1.52;
   margin: 0;
@@ -292,7 +292,7 @@ body {
 
 .candy-cover__middle-main .candy-cover__strike {
   margin-top: 0.42em;
-  font-size: clamp(0.48rem, 2.25cqw, 0.82rem);
+  font-size: clamp(0.58rem, 2.7cqw, 0.98rem);
   letter-spacing: 0.03em;
   text-decoration: line-through;
   text-decoration-color: rgba(55, 42, 30, 0.45);
@@ -308,14 +308,29 @@ body {
   max-width: min(92%, 24ch);
   margin-left: auto;
   margin-right: auto;
-  padding-top: 0.5em;
+  padding-top: 0.28em;
   text-align: center;
+  color: rgba(35, 24, 16, 0.96);
+  transform: translateY(5%);
+}
+
+.candy-cover__closing-title {
+  margin: 0;
   font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.68rem, 3.65cqw, 1.42rem);
   font-weight: 600;
   line-height: 1.18;
   letter-spacing: 0.02em;
-  color: rgba(35, 24, 16, 0.96);
+}
+
+.candy-cover__signature {
+  margin: 0.24em 0 0;
+  font-family: "Neucha", cursive;
+  font-size: clamp(0.88rem, 3.85cqw, 1.48rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: 0;
+  color: rgba(35, 24, 16, 0.94);
 }
 
 /* ── Free candy — top layer, floats above the cover ─────────────── */

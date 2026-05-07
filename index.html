@@ -144,6 +144,9 @@
                     <p class="letter-title candy-cover-footer-title">
                       МЫ ОЧЕНЬ ВАС ЖДЁМ!
                     </p>
+                    <p class="letter-text candy-cover-signature">
+                      Никита и Ксения
+                    </p>
                   </footer>
                   <div class="candy-cover-rail candy-cover-rail--bottom" aria-hidden="true"></div>
                 </div>
@@ -152,6 +155,15 @@
             <div class="paper-layout paper-layout--free" id="freeCandy">
               <img class="paper-bg" src="images/free_candy.webp" alt="" decoding="async" />
             </div>
+            <button
+              type="button"
+              class="horizontal-hint"
+              id="horizontalHint"
+              aria-label="Перейти дальше"
+            >
+              <span class="horizontal-hint__text">далее</span>
+              <img class="horizontal-hint__arrow" src="./img/arrow-handdrawn-right.svg" alt="" width="72" height="42" decoding="async" />
+            </button>
           </div>
           <div class="scene__fireflies" id="firefliesLayer" aria-hidden="true">
             <span class="firefly firefly--1" style="--x:5%;--y:62%;--delay:-0.8s;--drift:17s;--tw:2s;--tw-d:0s;--size:6px"></span>
@@ -226,16 +238,6 @@
             </section>
           </div>
           </div>
-          <button
-            type="button"
-            class="horizontal-hint"
-            id="horizontalHint"
-            aria-label="Листать сцену вправо"
-            onclick="if(window.goToHorizontalScene) window.goToHorizontalScene(); return false;"
-          >
-            <span class="horizontal-hint__text">дальше</span>
-            <img class="horizontal-hint__arrow" src="./img/arrow-handdrawn-right.svg" alt="" width="72" height="42" decoding="async" />
-          </button>
         </div>
       </div>
     </section>
@@ -272,8 +274,26 @@
               <div class="letter-block letter-block--body">
                 <p class="letter-text">Лучший подарок — на карту или в конверте</p>
                 <p class="letter-text letter-text--subscription">
-                  Вместо букета будем рады цветочной подписке —<br />
-                  так цветы не умрут за пару дней, а останутся с нами надолго
+                  <span class="subscription-line">
+                    Вместо букета будем рады
+                    <span class="flower-link-wrap">
+                      <a
+                        class="letter-link letter-link--flower"
+                        href="https://t.me/BunchMskBot?start=deposit_3823cafb-c641-4807-bb5e-4dedbfb35338"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-describedby="flowerSubscriptionHint"
+                      >цветочной подписке</a>
+                      <span
+                        class="flower-link-tooltip"
+                        id="flowerSubscriptionHint"
+                        role="tooltip"
+                      >Нужно подключить бота в тг. В чат написать сумму, дальше появится ссылка на перевод</span>
+                    </span> —
+                  </span>
+                  <span class="subscription-line">
+                    так цветы не умрут за пару дней, а останутся с нами надолго
+                  </span>
                 </p>
               </div>
               <div class="letter-rail letter-rail--before-venue" aria-hidden="true"></div>
