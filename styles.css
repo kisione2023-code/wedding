@@ -1279,14 +1279,17 @@ body {
   }
 
   .candy-cover-block--head {
-    left: 26.5%;
+    left: 50%;
     top: 6.5%;
-    width: 57%;
+    width: 82%;
+    text-align: center;
+    transform: translateX(-50%);
   }
 
   .candy-cover-date-row {
     align-items: last baseline;
-    gap: 0.45em;
+    justify-content: center;
+    gap: 0.72em;
   }
 
   @supports not (align-items: last baseline) {
@@ -1305,7 +1308,9 @@ body {
   }
 
   .candy-cover-time {
+    margin-left: 0;
     padding-top: 0;
+    text-align: left;
     font-size: clamp(0.8rem, 3.82cqw, 1.3rem);
     line-height: 1.14;
   }
@@ -1317,15 +1322,14 @@ body {
   }
 
   .candy-cover-intro-line {
-    position: relative;
-    left: 41%;
-    width: max-content;
+    position: static;
+    width: 100%;
     margin: 0.1em 0 0 !important;
     max-width: none;
     text-align: center;
-    transform: translateX(-50%);
+    transform: none;
     white-space: nowrap;
-    font-size: clamp(0.64rem, 2.34cqw, 0.88rem);
+    font-size: clamp(0.58rem, 2.12cqw, 0.8rem);
     line-height: 1.18;
   }
 
