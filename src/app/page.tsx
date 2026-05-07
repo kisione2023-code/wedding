@@ -5,6 +5,7 @@ import gsap from "gsap"
 
 export default function Home() {
   const bgRef        = useRef<HTMLDivElement>(null)
+  const candyButtonRef = useRef<HTMLButtonElement>(null)
   const candyImgRef  = useRef<HTMLImageElement>(null)
   const videoRef     = useRef<HTMLVideoElement>(null)
   const coverWrapRef = useRef<HTMLDivElement>(null)
@@ -59,16 +60,21 @@ export default function Home() {
 
   const playCandyVideo = useCallback(() => {
     const bg        = bgRef.current
+    const candyButton = candyButtonRef.current
     const candyImg  = candyImgRef.current
     const video     = videoRef.current
 
-    if (!bg || !candyImg || !video || transitionedRef.current) return
+    if (!bg || !candyButton || !candyImg || !video || transitionedRef.current) return
 
-    candyImg.style.pointerEvents = "none"
+    candyButton.disabled = true
+    candyButton.style.pointerEvents = "none"
 
     // Fade out candy image.
     gsap.to(candyImg, { opacity: 0, scale: 0.9, duration: 0.2, ease: "power2.in",
-      onComplete: () => { candyImg.style.visibility = "hidden" },
+      onComplete: () => {
+        candyImg.style.visibility = "hidden"
+        candyButton.style.visibility = "hidden"
+      },
     })
 
     // Start background blur (progresses while video plays).
@@ -140,15 +146,22 @@ export default function Home() {
       </div>
 
       {/* Layer 2 — candy image, shown on load, click to play video */}
-      <img
-        ref={candyImgRef}
-        id="candyImg"
-        src="/images/candy.png"
-        alt=""
-        width={256}
-        height={128}
+      <button
+        ref={candyButtonRef}
+        id="candyButton"
+        type="button"
+        aria-label="Открыть приглашение"
         onClick={playCandyVideo}
-      />
+      >
+        <img
+          ref={candyImgRef}
+          id="candyImg"
+          src="/images/candy.png"
+          alt=""
+          width={104}
+          height={81}
+        />
+      </button>
 
       {/* Layer 3 — candy video, hidden until clicked */}
       <video

@@ -183,10 +183,6 @@
             <div class="scroll-hint__text">вниз</div>
             <div class="scroll-hint__arrow"></div>
           </div>
-          <button type="button" class="horizontal-hint" id="horizontalHint" aria-label="Листать сцену вправо">
-            <span class="horizontal-hint__text">дальше</span>
-            <img class="horizontal-hint__arrow" src="./img/arrow-handdrawn-right.svg" alt="" width="72" height="42" decoding="async" />
-          </button>
           <div id="horizontalTrigger"></div>
           </div>
           <div id="horizontalScene" class="scene4__track">
@@ -230,6 +226,16 @@
             </section>
           </div>
           </div>
+          <button
+            type="button"
+            class="horizontal-hint"
+            id="horizontalHint"
+            aria-label="Листать сцену вправо"
+            onclick="if(window.goToHorizontalScene) window.goToHorizontalScene(); return false;"
+          >
+            <span class="horizontal-hint__text">дальше</span>
+            <img class="horizontal-hint__arrow" src="./img/arrow-handdrawn-right.svg" alt="" width="72" height="42" decoding="async" />
+          </button>
         </div>
       </div>
     </section>
@@ -266,8 +272,8 @@
               <div class="letter-block letter-block--body">
                 <p class="letter-text">Лучший подарок — на карту или в конверте</p>
                 <p class="letter-text letter-text--subscription">
-                  Вместо букета будем рады цветочной подписке — так цветы<br />
-                  не умрут за пару дней, а останутся с нами надолго
+                  Вместо букета будем рады цветочной подписке —<br />
+                  так цветы не умрут за пару дней, а останутся с нами надолго
                 </p>
               </div>
               <div class="letter-rail letter-rail--before-venue" aria-hidden="true"></div>
@@ -309,6 +315,6 @@
       </div>
     </div>
   </main>
-  <script src="script.js"></script>
+  <script src="script.js?v=20260507-focus"></script>
 </body>
 </html>

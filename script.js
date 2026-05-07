@@ -100,6 +100,34 @@
     return container.getBoundingClientRect().width;
   }
 
+  function getLadyMotion() {
+    var containerWidth = getMoveDistance();
+    var width = window.innerWidth;
+    var height = window.innerHeight;
+    var startRatio = MOVE_START_RATIO;
+    var endRatio = MOVE_END_RATIO;
+    var endOffset = 120;
+    var endY = 30;
+
+    if (width <= 700 && width < height) {
+      startRatio = 0.06;
+      endRatio = 0.10;
+      endOffset = 0;
+      endY = 34;
+    } else if (height <= 520) {
+      startRatio = 0.16;
+      endRatio = 0.22;
+      endOffset = 30;
+      endY = 24;
+    }
+
+    return {
+      midX: containerWidth * startRatio,
+      endX: containerWidth * endRatio - endOffset,
+      endY: endY
+    };
+  }
+
   /* ---------- Мастер-таймлайн ---------- */
   var master = gsap.timeline({
     scrollTrigger: {
@@ -107,6 +135,7 @@
       start: "top top",
       end: "bottom bottom",
       scrub: 0.5,
+      invalidateOnRefresh: true,
     },
   });
 
@@ -144,12 +173,6 @@
 
   /* 5. Персонаж: 3 фазы — въезд → пауза → финал + кроссфейд */
 
-  // Вычисляем контейнер при создании таймлайна
-  var containerWidth = getMoveDistance();
-  var midX  = containerWidth * MOVE_START_RATIO;            // середина-лево
-  var endX  = containerWidth * MOVE_END_RATIO - 120;        // коррекция 120px влево
-  var endY  = 30;                                            // коррекция 30px вниз
-
   // Длительности фаз (доли от ladyDuration)
   var PHASE1_RATIO = 0.65;   // медленный въезд
   var PHASE2_RATIO = 0.13;   // пауза
@@ -166,7 +189,7 @@
   // --- Фаза 1: медленный въезд слева → midX ---
   master.to(
     ladyInner,
-    { x: midX, y: 0, ease: "none", duration: ladyDuration * PHASE1_RATIO },
+    { x: function () { return getLadyMotion().midX; }, y: 0, ease: "none", duration: ladyDuration * PHASE1_RATIO },
     ladyStartP + 0.06
   );
 
@@ -174,7 +197,7 @@
   // Позиция не меняется — просто «заполнитель» длительности
   master.to(
     ladyInner,
-    { x: midX, y: 0, ease: "none", duration: ladyDuration * PHASE2_RATIO },
+    { x: function () { return getLadyMotion().midX; }, y: 0, ease: "none", duration: ladyDuration * PHASE2_RATIO },
     ladyStartP + 0.06 + ladyDuration * PHASE1_RATIO
   );
 
@@ -182,7 +205,12 @@
   var phase3Start = ladyStartP + 0.06 + ladyDuration * (PHASE1_RATIO + PHASE2_RATIO);
   master.to(
     ladyInner,
-    { x: endX, y: endY, ease: "power2.out", duration: ladyDuration * PHASE3_RATIO },
+    {
+      x: function () { return getLadyMotion().endX; },
+      y: function () { return getLadyMotion().endY; },
+      ease: "power2.out",
+      duration: ladyDuration * PHASE3_RATIO
+    },
     phase3Start
   );
 
@@ -465,6 +493,22 @@
     });
   }
 
+  function scene5ManFinalFits(finalVars) {
+    if (!scene5ManWrap) return true;
+
+    gsap.set(scene5ManWrap, finalVars);
+
+    var rect = scene5ManWrap.getBoundingClientRect();
+    var padding = Math.min(24, Math.max(10, window.innerWidth * 0.03));
+
+    return (
+      rect.left >= padding &&
+      rect.right <= window.innerWidth - padding &&
+      rect.top >= padding &&
+      rect.bottom <= window.innerHeight - padding
+    );
+  }
+
   function startScene5ManAutoWalk() {
     if (!scene5ManWrap || !scene5ManWalk) return;
 
@@ -477,17 +521,32 @@
     var p1From = {
       transformOrigin: "50% 100%",
       force3D: true,
-      x: "31vh",
+      x: "5vh",
       y: "-25vh",
       scale: 1.25,
     };
 
-    var p1To = {
+    var p1ToTransform = {
       transformOrigin: "50% 100%",
       force3D: true,
-      x: "-1vh",
+      x: "-27vh",
       y: "4vh",
       scale: 2.16,
+    };
+
+    var p1ToMan2Transform = {
+      transformOrigin: "50% 100%",
+      force3D: true,
+      x: "8vh",
+      y: "4vh",
+      scale: 2.24,
+    };
+
+    if (!scene5ManFinalFits(p1ToTransform)) {
+      p1ToTransform = p1ToMan2Transform;
+    }
+
+    var p1To = Object.assign({}, p1ToTransform, {
       duration: 2.8,
       ease: "power2.out",
       onComplete: function () {
@@ -520,7 +579,7 @@
           },
         });
       },
-    };
+    });
 
     gsap.set(scene5ManWrap, {
       opacity: 1,
@@ -548,6 +607,8 @@
     });
   }
 
+  window.startScene5ManAutoWalk = startScene5ManAutoWalk;
+
   function getWorldTrack() {
     return document.getElementById("world");
   }
@@ -555,7 +616,94 @@
   function getHorizontalMaxX() {
     var track = getWorldTrack();
     if (!track) return 0;
-    return Math.max(0, track.scrollWidth - window.innerWidth);
+
+    var horizontalScene = document.getElementById("horizontalScene");
+    var scene5 = document.getElementById("scene5");
+    var sceneOffset = horizontalScene ? horizontalScene.offsetLeft : 0;
+    var sceneWidth = 0;
+
+    if (scene5) sceneWidth = Math.max(sceneWidth, scene5.offsetWidth, scene5.scrollWidth);
+    if (horizontalScene) sceneWidth = Math.max(sceneWidth, horizontalScene.offsetWidth, horizontalScene.scrollWidth);
+
+    return Math.max(
+      0,
+      track.scrollWidth - window.innerWidth,
+      sceneOffset + sceneWidth - window.innerWidth
+    );
+  }
+
+  function getHorizontalFallbackX() {
+    var horizontalScene = document.getElementById("horizontalScene");
+    if (!horizontalScene) return window.innerWidth;
+    return Math.max(window.innerWidth, horizontalScene.offsetLeft || 0);
+  }
+
+  function getRectInWorld(el) {
+    var track = getWorldTrack();
+    if (!track || !el) return null;
+
+    var trackRect = track.getBoundingClientRect();
+    var rect = el.getBoundingClientRect();
+
+    if (!rect.width && !rect.height) return null;
+
+    return {
+      left: rect.left - trackRect.left,
+      right: rect.right - trackRect.left,
+      top: rect.top - trackRect.top,
+      bottom: rect.bottom - trackRect.top,
+      width: rect.width,
+      height: rect.height,
+    };
+  }
+
+  function getHorizontalFocusX() {
+    var maxX = getHorizontalMaxX();
+    if (maxX <= 1) return maxX;
+
+    var focusElements = [
+      scene5Man2,
+      scene5ManWrap,
+      document.querySelector(".scene5__letter-wrap"),
+    ].filter(Boolean);
+
+    var bounds = null;
+    focusElements.forEach(function (el) {
+      var rect = getRectInWorld(el);
+      if (!rect) return;
+
+      if (!bounds) {
+        bounds = {
+          left: rect.left,
+          right: rect.right,
+        };
+        return;
+      }
+
+      bounds.left = Math.min(bounds.left, rect.left);
+      bounds.right = Math.max(bounds.right, rect.right);
+    });
+
+    if (!bounds) return maxX;
+
+    var viewportWidth = window.innerWidth;
+    var padding = Math.min(42, Math.max(18, viewportWidth * 0.07));
+    var groupWidth = bounds.right - bounds.left;
+    var target;
+
+    if (groupWidth + padding * 2 >= viewportWidth) {
+      target = bounds.left - padding;
+    } else {
+      target = bounds.left + groupWidth / 2 - viewportWidth / 2;
+    }
+
+    return Math.max(0, Math.min(target, maxX));
+  }
+
+  function getHorizontalLimitX() {
+    var focusX = getHorizontalFocusX();
+    if (focusX > 1) return focusX;
+    return getHorizontalMaxX();
   }
 
   function ensureHorizontalStarted() {
@@ -569,7 +717,8 @@
     var track = getWorldTrack();
     if (!track) return;
 
-    var maxX = getHorizontalMaxX();
+    var maxX = getHorizontalLimitX();
+    if (maxX <= 1 && currentX > 1) maxX = currentX;
     currentX = Math.max(0, Math.min(currentX, maxX));
     var target = currentX;
 
@@ -580,9 +729,6 @@
         duration: 1.6,
         ease: "power3.out",
         overwrite: "auto",
-        onUpdate: function () {
-          ScrollTrigger.refresh();
-        },
         onComplete: function () {
           gsap.to(track, {
             x: -target + 12,
@@ -591,10 +737,9 @@
             yoyo: true,
             repeat: 1,
             overwrite: "auto",
-            onUpdate: function () {
-              ScrollTrigger.refresh();
-            },
             onComplete: function () {
+              ScrollTrigger.refresh();
+              gsap.set("#horizontalScene", { pointerEvents: "auto" });
               updateHorizontalHintVisibility();
             },
           });
@@ -610,19 +755,34 @@
       duration: d,
       ease: "power2.out",
       overwrite: "auto",
-      onUpdate: function () {
-        ScrollTrigger.refresh();
-      },
       onComplete: function () {
+        ScrollTrigger.refresh();
+        gsap.set("#horizontalScene", { pointerEvents: "auto" });
         updateHorizontalHintVisibility();
       },
     });
   }
 
+  function goToHorizontalScene() {
+    var track = getWorldTrack();
+    if (!track) return;
+
+    horizontalMode = true;
+    ensureHorizontalStarted();
+    currentX = getHorizontalFocusX();
+    if (currentX <= 1) currentX = getHorizontalFallbackX();
+
+    gsap.set("#horizontalScene", { pointerEvents: "none" });
+    gsap.killTweensOf(track);
+    animateWorldToCurrentX(1.7, { cinematic: true });
+  }
+
+  window.goToHorizontalScene = goToHorizontalScene;
+
   function updateHorizontalHintVisibility() {
     if (!horizontalHint || !horizontalMode) return;
 
-    var maxX = getHorizontalMaxX();
+    var maxX = getHorizontalLimitX();
     var atEnd = maxX <= 1 || currentX >= maxX - 2;
 
     if (!scene5Started && currentX >= maxX - window.innerWidth * 0.2) {
@@ -665,7 +825,7 @@
   function showHorizontalHint() {
     if (!horizontalHint) return;
 
-    var maxX = getHorizontalMaxX();
+    var maxX = getHorizontalLimitX();
     if (maxX <= 1) return;
 
     horizontalHintHiddenAtEnd = false;
@@ -870,6 +1030,7 @@
           unlockScroll();
           ScrollTrigger.refresh();
           horizontalMode = true;
+          gsap.set("#horizontalScene", { pointerEvents: "none" });
           showHorizontalHint();
         }
       });
@@ -902,14 +1063,29 @@
   }, { passive: false });
 
   if (horizontalHint) {
-    horizontalHint.addEventListener("click", function (e) {
-      e.preventDefault();
-      if (!horizontalMode) return;
+    var lastHorizontalHintAt = 0;
+    var handleHorizontalHint = function (e) {
+      var now = Date.now();
+      if (now - lastHorizontalHintAt < 350) return;
+      lastHorizontalHintAt = now;
 
-      ensureHorizontalStarted();
-      currentX += window.innerWidth * 0.8;
-      animateWorldToCurrentX(undefined, { cinematic: true });
-    });
+      e.preventDefault();
+      e.stopPropagation();
+      goToHorizontalScene();
+    };
+
+    horizontalHint.addEventListener("click", handleHorizontalHint);
+    horizontalHint.addEventListener("pointerup", handleHorizontalHint);
+
+    document.addEventListener("click", function (e) {
+      if (!e.target || !e.target.closest || !e.target.closest("#horizontalHint")) return;
+      handleHorizontalHint(e);
+    }, true);
+
+    document.addEventListener("pointerup", function (e) {
+      if (!e.target || !e.target.closest || !e.target.closest("#horizontalHint")) return;
+      handleHorizontalHint(e);
+    }, true);
   }
 
   /* ---------- Инициализация ---------- */
