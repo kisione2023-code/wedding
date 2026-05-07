@@ -804,7 +804,7 @@ body {
 
   width: 100%;
   height: 100%;
-  --cover-title-font: "Moderno Two", "Georgia", "Times New Roman", serif;
+  --cover-title-font: "Playfair Display", "Georgia", "Times New Roman", serif;
   --cover-text-font: "Blogger Sans", system-ui, sans-serif;
   --cover-helper-font: "Neucha", cursive;
   /* Явный цвет дерева текста на случай сброса наследования */
@@ -1060,7 +1060,7 @@ body {
 }
 
 .letter-title {
-  font-family: "Moderno Two", "Georgia", "Times New Roman", serif;
+  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.82rem, 2.05vw, 1.32rem);
   font-weight: 600;
   line-height: 1.2;
@@ -1317,11 +1317,15 @@ body {
   }
 
   .candy-cover-intro-line {
-    margin: 0.1em -10% 0 -12% !important;
+    position: relative;
+    left: 41%;
+    width: max-content;
+    margin: 0.1em 0 0 !important;
     max-width: none;
-    text-align: right;
+    text-align: center;
+    transform: translateX(-50%);
     white-space: nowrap;
-    font-size: clamp(0.72rem, 2.72cqw, 1.02rem);
+    font-size: clamp(0.64rem, 2.34cqw, 0.88rem);
     line-height: 1.18;
   }
 
