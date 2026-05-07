@@ -7,6 +7,16 @@
 }
 
 @font-face {
+  font-family: "Moderno Two";
+  src:
+    url("/fonts/moderno-two.woff") format("woff"),
+    url("/fonts/moderno-two.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Blogger Sans";
   src: url("/fonts/blogger-sans-400.woff") format("woff");
   font-style: normal;
@@ -265,7 +275,7 @@ body {
 }
 
 .candy-cover__date-main {
-  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
+  font-family: "Moderno Two", "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.98rem, 5.8cqw, 2rem);
   font-weight: 600;
   line-height: 1.06;
@@ -275,7 +285,7 @@ body {
 }
 
 .candy-cover__forest {
-  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
+  font-family: "Moderno Two", "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.92rem, 5.3cqw, 1.82rem);
   font-weight: 600;
   line-height: 1.1;
@@ -362,7 +372,7 @@ body {
 
 .candy-cover__closing-title {
   margin: 0;
-  font-family: "Playfair Display", "Georgia", "Times New Roman", serif;
+  font-family: "Moderno Two", "Playfair Display", "Georgia", "Times New Roman", serif;
   font-size: clamp(0.68rem, 3.65cqw, 1.42rem);
   font-weight: 600;
   line-height: 1.18;
@@ -371,7 +381,7 @@ body {
 
 .candy-cover__signature {
   margin: 0.24em 0 0;
-  font-family: "Neucha", cursive;
+  font-family: "Blogger Sans", system-ui, sans-serif;
   font-size: clamp(0.88rem, 3.85cqw, 1.48rem);
   font-weight: 500;
   line-height: 1.08;
