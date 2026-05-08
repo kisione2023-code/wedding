@@ -906,11 +906,12 @@ body {
 }
 
 .candy-cover-block--head {
-  left: 22.6%;
+  left: 50%;
   top: 8%;
-  width: 58.5%;
+  width: 70%;
   max-width: none;
-  text-align: left;
+  text-align: center;
+  transform: translateX(-50%);
 }
 
 .candy-cover-date-row {
@@ -918,7 +919,7 @@ body {
   flex-wrap: nowrap;
   align-items: flex-start;
   gap: 1.1em;
-  justify-content: space-between;
+  justify-content: center;
   white-space: nowrap;
 }
 
@@ -936,6 +937,9 @@ body {
 }
 
 .candy-cover-time {
+  position: absolute;
+  top: 0.18em;
+  right: 4%;
   margin: 0;
   padding-top: 0.18em;
   transform: none;
@@ -963,10 +967,10 @@ body {
 
 .candy-cover-intro-line {
   display: block;
-  margin: 0.34em -13.5% 0 calc(-9% - 30px) !important;
-  max-width: 31em;
+  margin: 0.34em auto 0 !important;
+  max-width: none;
 
-  text-align: right;
+  text-align: center;
   font-weight: 500;
   font-family: var(--cover-helper-font);
   font-size: clamp(0.91rem, 3.72cqw, 1.74rem);
@@ -1015,10 +1019,11 @@ body {
 }
 
 .candy-cover-block--closing {
-  left: 19.45%;
+  left: 50%;
   bottom: 11%;
   width: 70%;
   text-align: center;
+  transform: translateX(-50%);
 }
 
 .candy-cover-stack .candy-cover-footer-title {
@@ -1085,7 +1090,7 @@ body {
 }
 
 .letter-rail--before-venue {
-  height: 5%;
+  height: 7.6%;
 }
 
 /* Зазор между блоком заведения и строкой парковки */
@@ -1127,7 +1132,12 @@ body {
 }
 
 .letter-block--footer {
-  transform: translateY(48%);
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  width: 78%;
+  max-width: 78%;
+  transform: translateX(-50%);
 }
 
 .letter-text {
@@ -1153,6 +1163,10 @@ body {
 
 .subscription-line {
   display: block;
+}
+
+.subscription-mobile-break {
+  display: inline;
 }
 
 .letter-text--subscription .subscription-line:first-child {
@@ -1343,7 +1357,7 @@ body {
   }
 
   .candy-cover-block--head {
-    left: 46%;
+    left: 50%;
     top: 6.5%;
     width: 82%;
     text-align: center;
@@ -1367,39 +1381,42 @@ body {
   }
 
   .candy-cover-stack .candy-cover-display {
-    font-size: clamp(1rem, 7.2cqw, 2.15rem);
-    letter-spacing: 0.015em;
+    font-size: clamp(0.82rem, 5.25cqw, 1.58rem);
+    letter-spacing: 0.008em;
   }
 
   .candy-cover-time {
+    position: absolute;
+    top: -0.58em;
+    right: -3.5%;
     margin-left: 0;
     padding-top: 0;
     text-align: left;
-    font-size: clamp(0.8rem, 3.82cqw, 1.3rem);
-    line-height: 1.14;
+    font-size: clamp(0.54rem, 2.35cqw, 0.78rem);
+    line-height: 1.08;
   }
 
   .candy-cover-forest-line {
-    margin-top: -0.18em !important;
-    font-size: clamp(1.02rem, 7.25cqw, 2.15rem);
+    margin-top: -0.06em !important;
+    font-size: clamp(0.84rem, 5.35cqw, 1.62rem);
     letter-spacing: 0.012em;
   }
 
   .candy-cover-intro-line {
     position: static;
     width: 100%;
-    margin: 0.1em 0 0 !important;
+    margin: 0.3em 0 0 !important;
     max-width: none;
     text-align: center;
     transform: none;
     white-space: nowrap;
-    font-size: clamp(0.58rem, 2.12cqw, 0.8rem);
+    font-size: clamp(0.5rem, 1.86cqw, 0.72rem);
     line-height: 1.18;
   }
 
   .candy-cover-block--middle {
     left: 29%;
-    top: 40.4%;
+    top: 37.2%;
     width: 43%;
   }
 
@@ -1417,9 +1434,10 @@ body {
   }
 
   .candy-cover-block--closing {
-    left: 22%;
+    left: 50%;
     bottom: 23.5%;
     width: 62%;
+    transform: translateX(-50%);
   }
 
   .horizontal-hint {
@@ -1438,6 +1456,40 @@ body {
     margin-top: 0.18em !important;
     font-size: clamp(0.82rem, 3.85cqw, 1.36rem);
     line-height: 1.05;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .paper-layout--cover {
+    width: min(64vw, calc((100svh - 24px) * 1.713), 720px);
+  }
+
+  .candy-cover-block--head {
+    top: 6.2%;
+    width: 66%;
+  }
+
+  .candy-cover-stack .candy-cover-display {
+    font-size: clamp(0.88rem, 5.25cqw, 2.1rem);
+    letter-spacing: 0.012em;
+  }
+
+  .candy-cover-time {
+    top: -0.18em;
+    right: 1%;
+    padding-top: 0;
+    font-size: clamp(0.58rem, 2.15cqw, 0.86rem);
+    line-height: 1.12;
+  }
+
+  .candy-cover-forest-line {
+    margin-top: -0.14em !important;
+    font-size: clamp(0.92rem, 5.55cqw, 2.2rem);
+  }
+
+  .candy-cover-intro-line {
+    margin-top: 0.16em !important;
+    font-size: clamp(0.48rem, 1.7cqw, 0.72rem);
   }
 }
 
@@ -1660,13 +1712,13 @@ body {
     font-size: clamp(0.72rem, 3.08vw, 1.08rem);
   }
 
+  .subscription-mobile-break {
+    display: block;
+  }
+
   .letter-block--footer {
-    position: absolute;
-    left: 50%;
-    bottom: 4.8%;
     width: 88%;
     max-width: 88%;
-    transform: translateX(-50%);
   }
 
   .letter-rail--grow {
